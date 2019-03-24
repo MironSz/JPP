@@ -6,13 +6,8 @@ class Mon m where
   m1 :: m
   (><) :: m -> m -> m
 
--- ** Properties:
--- * leftUnit x = m1 >< x == x
--- * rightUnit x =  x >< m1 == x
--- * assoc x y z = (x >< y) >< z == x >< (y >< z)
 type R = Rational
 
--- typ R objaśniony w tekście poniżej
 type R2 = (R, R)
 
 data Vec =
@@ -53,8 +48,10 @@ data Matrix =
          R
          R
          R
+
 instance Show Matrix where
   show (Matrix a b c d) = "Matrix ("++ show a++", "++ show b++", "++show c++", "++show d ++")"
+
 addVec :: Vec -> Vec -> Vec
 addVec (Vec (a, b)) (Vec (a2, b2)) = Vec (a + a2, b + b2)
 
@@ -90,18 +87,15 @@ data Picture
   | Transformed Transform
                 Picture
 
--- odcinek pomiędzy punktami o podanych współrzędnych
 line :: (R, R) -> (R, R) -> Picture
 line (a, b) (c, d) = Simple (Line (point (a, b)) (point (c, d)))
 
 lline :: R -> R -> R -> R -> Line
 lline a b c d = Line (point (a, b)) (point (c, d))
 
--- prostokąt o podanej szerokości i wysokości zaczepiony w (0,0)
 rectangle :: R -> R -> Picture
 rectangle w h = Rectangle (lline 0 0 0 h) (lline 0 h w h) (lline w h w 0) (lline w 0 0 0)
 
--- suma (nałożenie) dwóch rysunków
 (&) :: Picture -> Picture -> Picture
 (&) = Complex
 
@@ -123,20 +117,15 @@ rRenderScaled s (Rectangle l1 l2 l3 l4) acc f = rRenderScaled s (Simple l1) acc1
   acc3 = rRenderScaled s (Simple l4) acc f
 
 
-
 renderScaled :: Int -> Picture -> IntRendering
 renderScaled s p = rRenderScaled s p [] (m1::Transform)
 
---renderScaled s (Simple (Line p1 p2)) = [(pointToIntWithScale s p1, pointToIntWithScale s p2)]
---renderScaled s (Rectangle l1 l2 l3 l4) =
---  renderScaled s (Simple l1) ++ renderScaled s (Simple l2) ++ renderScaled s (Simple l3) ++ renderScaled s (Simple l4)
---renderScaled s (Complex p1 p2) = renderScaled s p1 ++ renderScaled s p2
 
 myPi :: R
 myPi = toRational 314/ toRational 100
 
 mySin :: R -> R
-mySin x = (toRational 16 * (myPi - x)) / (toRational 5 * myPi * myPi - 4 * x * (myPi - x))
+mySin x = ((toRational 16 )*x* (myPi - x)) / (toRational 5 * myPi * myPi - 4 * x * (myPi - x))
 
 myCos :: R -> R
 myCos x = (myPi * myPi - 4 * x * x) / (myPi * myPi + x * x)
@@ -157,6 +146,9 @@ fullCircle = 2 * myPi
 instance Mon Transform where
   m1 = F onemat (Vec (0, 0))
   (><) (F a b) (F a2 b2) = F (matmulmat a a2) ((matmulvec a2 b) >< b2)
+
+instance Show Transform where
+  show (F m (Vec (a,b)))= "Transform A= "++show m++" + ("++show a++", "++show b++")"
 
 trvec :: Transform -> Vec -> Vec
 trvec (F m b) v = addVec (matmulvec m v) b

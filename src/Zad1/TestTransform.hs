@@ -46,7 +46,7 @@ main = do
   quickCheck testRightUnit
   writeln "composition associativity"
   quickCheckWith stdArgs {maxSuccess = 1000} testCompAssoc
-  writeln "vector associativity"
+  writeln "vector associativity"g
   quickCheckWith stdArgs {maxSuccess = 1000} testVecAssoc
   writeln "------------------------"
   writeln "Compose translations"
